@@ -1,0 +1,67 @@
+services:
+  servidor:
+    build: ./servidor
+    container_name: srv-debian
+    hostname: servidor
+    privileged: true
+    networks:
+      redproyecto:
+        ipv4_address: 172.25.0.10
+    volumes:
+      - respaldos_vol:/respaldos
+      - ./scripts:/scripts
+      - ./logs:/logs
+
+  cliente:
+    build: ./cliente
+    container_name: cli-debian
+    hostname: cliente
+    networks:
+      redproyecto:
+        ipv4_address: 172.25.0.20
+    volumes:
+      - ./scripts:/scripts
+
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    networks:
+      redproyecto:
+        ipv4_address: 172.25.0.30
+    ports:
+      - "9100:9100"
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    networks:
+      redproyecto:
+        ipv4_address: 172.25.0.40
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    networks:
+      redproyecto:
+        ipv4_address: 172.25.0.50
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+
+networks:
+  redproyecto:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.25.0.0/24
+
+volumes:
+  respaldos_vol:
+  prometheus_data:
+  grafana_data:
