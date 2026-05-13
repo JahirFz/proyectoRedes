@@ -19,4 +19,4 @@ RUN mkdir -p /var/run/sshd /scripts /respaldos /datos
 
 RUN echo 'root:root123' | chpasswd
 
-CMD service ssh start && service cron start && service rsyslog start && tail -f /var/log/syslog
+CMD service ssh start && service cron start && rsyslogd && tail -f /var/log/syslog
